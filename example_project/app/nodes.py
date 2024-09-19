@@ -1,3 +1,6 @@
+from taggit.models import TaggedItem
+import graphene
+
 from example_project.app.filtersets import (
     ExampleFilterSet,
     ForwardManyToManyFilterSet,
@@ -88,8 +91,16 @@ class ReverseManyToManyNode(DjangoNode):
             "name",
             "example_fields",
         ]
-        permission_classes = [AllowAuthenticated]
+        permission_classes = [AllowAny]
         filterset_class = ReverseManyToManyFilterSet
+
+
+class TaggedItemNode(graphene.ObjectType):
+    class Meta:
+        model = TaggedItem
+        fields = ["name"]
+
+    name = graphene.String()
 
 
 class ExampleNode(DjangoNode):
@@ -99,22 +110,27 @@ class ExampleNode(DjangoNode):
     reverse_one_to_one_rel = ReverseOneToOneNode.RelatedField()
     reverse_one_to_many_rels = ReverseOneToManyNode.ListField()
     reverse_many_to_many_rels = ReverseManyToManyNode.Connection()
+    tagged_items = graphene.List(TaggedItemNode)
+
+    def resolve_tagged_items(self, *args, **kwargs):
+        return [TaggedItemNode(x) for x in self.tags.all()]
 
     class Meta:
         model = Example
         fields = [
-            "pk",
-            "name",
-            "number",
+            "duration",
             "email",
             "example_state",
-            "duration",
-            "forward_one_to_one_field",
-            "forward_many_to_one_field",
             "forward_many_to_many_fields",
-            "reverse_one_to_one_rel",
-            "reverse_one_to_many_rels",
+            "forward_many_to_one_field",
+            "forward_one_to_one_field",
+            "name",
+            "number",
+            "pk",
             "reverse_many_to_many_rels",
+            "reverse_one_to_many_rels",
+            "reverse_one_to_one_rel",
+            "tagged_items",
         ]
         permission_classes = [AllowAuthenticated]
         restricted_fields = {

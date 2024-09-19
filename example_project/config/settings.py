@@ -18,6 +18,7 @@ INTERNAL_IPS = [
 ]
 
 INSTALLED_APPS = [
+    "taggit",
     "modeltranslation",
     "django.contrib.admin",
     "django.contrib.auth",
