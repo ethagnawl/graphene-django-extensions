@@ -91,7 +91,7 @@ class ReverseManyToManyNode(DjangoNode):
             "name",
             "example_fields",
         ]
-        permission_classes = [AllowAny]
+        permission_classes = [AllowAuthenticated]
         filterset_class = ReverseManyToManyFilterSet
 
 
