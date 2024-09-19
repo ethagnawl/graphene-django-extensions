@@ -73,3 +73,6 @@ def create_test_data() -> None:
     r30.example_fields.add(e1, e2)
     r31 = ReverseManyToMany.objects.create(name=faker.name())
     r31.example_fields.add(e1, e2)
+
+    e1.tags.add("season 1", "episode 1")
+    e2.tags.add("season 2", "episode 1")

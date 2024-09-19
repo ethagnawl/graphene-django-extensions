@@ -46,6 +46,7 @@ class ExampleFilterSet(ModelFilterSet):
     filter = UserDefinedFilter(
         model=Example,
         fields=[
+            "tags__name",
             "pk",
             "name",
             "name_en",

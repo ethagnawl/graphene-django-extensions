@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from django.db import models
+from taggit.managers import TaggableManager
 
 
 class ForwardOneToOne(models.Model):
@@ -30,10 +31,14 @@ class ExampleState(models.TextChoices):
 
 
 class Example(models.Model):
+    tags = TaggableManager()
+
     name = models.CharField(max_length=255)
     number = models.IntegerField()
     email = models.EmailField(unique=True)
-    example_state = models.CharField(choices=ExampleState.choices, max_length=255)
+    example_state = models.CharField(
+        choices=ExampleState.choices, max_length=255
+    )  # noqa
     duration = models.DurationField()
     symmetrical_field = models.ManyToManyField("self")
     forward_one_to_one_field = models.OneToOneField(

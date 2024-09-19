@@ -1,5 +1,7 @@
 .PHONY: help
 .PHONY: dev
+.PHONY: shell
+.PHONY: seed
 .PHONY: docs
 .PHONY: tests
 .PHONY: test
@@ -24,6 +26,8 @@ define helptext
   Commands:
 
   dev                  Serve manual testing server
+  shell                Run Django shell
+  seed                 Run Django 'create_test_data' command
   docs                 Serve mkdocs for development.
   tests                Run all tests with coverage.
   test <name>          Run all tests maching the given <name>
@@ -44,6 +48,12 @@ help:
 
 dev:
 	@poetry run python manage.py runserver localhost:8000
+
+shell:
+	@poetry run python manage.py shell
+
+seed:
+	@poetry run python manage.py create_test_data
 
 docs:
 	@poetry run mkdocs serve -a localhost:8080
