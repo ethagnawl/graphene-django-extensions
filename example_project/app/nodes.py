@@ -1,5 +1,5 @@
-from taggit.models import TaggedItem
 import graphene
+from taggit.models import TaggedItem
 
 from example_project.app.filtersets import (
     ExampleFilterSet,
@@ -112,7 +112,7 @@ class ExampleNode(DjangoNode):
     reverse_many_to_many_rels = ReverseManyToManyNode.Connection()
     tagged_items = graphene.List(TaggedItemNode)
 
-    def resolve_tagged_items(self, *args, **kwargs):
+    def resolve_tagged_items(self, info):
         return [TaggedItemNode(x) for x in self.tags.all()]
 
     class Meta:
