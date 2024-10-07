@@ -98,10 +98,16 @@ class UserDefinedFilter(django_filters.Filter):
         if result.ordering:  # pragma: no cover
             qs = qs.order_by(*qs.query.order_by, *result.ordering)
 
-        return qs.filter(result.filters)
+        for filter_thunk in result.filter_thunks:
+            qs = filter_thunk['OP'](qs)
+
+        qs = qs.distinct()
+
+        return qs
 
     def build_user_defined_filters(self, data: UserDefinedFilterInput) -> UserDefinedFilterResult:
         filters: Q = Q()
+        filter_thunks = []
         ann: dict[str, Any] = {}
         ordering: list[str] = []
 
@@ -116,19 +122,32 @@ class UserDefinedFilter(django_filters.Filter):
 
             for operation in data.operations:
                 result = self.build_user_defined_filters(operation)
-                if result.annotations:  # pragma: no cover
-                    ann.update(result.annotations)
-                if result.ordering:  # pragma: no cover
-                    ordering.extend(result.ordering)
+                # if result.annotations:  # pragma: no cover
+                #     ann.update(result.annotations)
+                # if result.ordering:  # pragma: no cover
+                #     ordering.extend(result.ordering)
 
                 if data.operation.value == "AND":
-                    filters &= result.filters
+                    xs = []
+                    for filter_thunk in result.filter_thunks:
+                        filter_thunk["_OP"] = "AND"
+                        filter_thunk["OP"] = filter_thunk["AND"]
+                        xs.append(filter_thunk)
+                    filter_thunks = filter_thunks + xs
+
                 elif data.operation.value == "OR":
-                    filters |= result.filters
+                    xs = []
+                    for filter_thunk in result.filter_thunks:
+                        filter_thunk["_OP"] = "OR"
+                        filter_thunk["OP"] = filter_thunk["OR"]
+                        xs.append(filter_thunk)
+                    filter_thunks = filter_thunks + xs
                 elif data.operation.value == "NOT":
-                    filters = ~result.filters
+                    raise NotImplementedError("NOT")
+                    # filters = ~result.filters
                 elif data.operation.value == "XOR":
-                    filters ^= result.filters
+                    raise NotImplementedError("XOR")
+                    # filters ^= result.filters
 
         else:
             if data.field is None:
@@ -138,9 +157,26 @@ class UserDefinedFilter(django_filters.Filter):
             alias: str = getattr(data.field, "name", data.field)
             field: str = self.extra["fields"][alias]
             inputs: dict[str, Any] = {f"{field}{LOOKUP_SEP}{data.operation.value.lower()}": data.value}
-            filters = Q(**inputs)
 
-        return UserDefinedFilterResult(filters=filters, annotations=ann, ordering=ordering)
+            for k, v in inputs.items():
+                # TODO: Is items() necessary?
+                arg = {}
+                arg[k] = v
+                ops = {
+                    "OP": lambda xx: xx,
+                    "AND": lambda xx: xx.filter(**arg),
+                    "OR": lambda xx: xx | xx.filter(**arg),
+                }
+                print('arg', arg)
+                print('ops', ops)
+                filter_thunks.append(ops)
+
+        return UserDefinedFilterResult(
+            filters=filters,
+            filter_thunks=filter_thunks,
+            annotations=ann,
+            ordering=ordering
+        )
 
     @staticmethod
     def _normalize_fields(model: type[Model], fields: FilterFields) -> FieldAliasToLookup:

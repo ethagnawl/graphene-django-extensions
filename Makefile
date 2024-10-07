@@ -47,7 +47,7 @@ help:
 	@echo "$$helptext"
 
 dev:
-	@poetry run python manage.py runserver localhost:8000
+	@poetry run python manage.py runserver 0.0.0.0:8000
 
 shell:
 	@poetry run python manage.py shell

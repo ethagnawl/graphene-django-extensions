@@ -168,6 +168,7 @@ class UserDefinedFilterInput:
 
 @dataclass
 class UserDefinedFilterResult:
+    filter_thunks: list[Any]
     filters: Q
     annotations: dict[str, Any]
     ordering: list[str]

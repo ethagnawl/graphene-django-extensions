@@ -36,9 +36,7 @@ class Example(models.Model):
     name = models.CharField(max_length=255)
     number = models.IntegerField()
     email = models.EmailField(unique=True)
-    example_state = models.CharField(
-        choices=ExampleState.choices, max_length=255
-    )  # noqa
+    example_state = models.CharField(choices=ExampleState.choices, max_length=255)
     duration = models.DurationField()
     symmetrical_field = models.ManyToManyField("self")
     forward_one_to_one_field = models.OneToOneField(
@@ -70,7 +68,7 @@ class Example(models.Model):
             models.CheckConstraint(
                 check=models.Q(name__icontains="foo"),
                 name="check_example",
-                violation_error_message="Example constraint violation message.",
+                violation_error_message="Example constraint violation message.",  # noqa
             ),
         ]
 

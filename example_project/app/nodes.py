@@ -20,7 +20,7 @@ from example_project.app.models import (
     ReverseOneToOne,
 )
 from graphene_django_extensions import DjangoNode
-from graphene_django_extensions.permissions import AllowAuthenticated
+from graphene_django_extensions.permissions import AllowAny
 
 
 class ForwardOneToOneNode(DjangoNode):
@@ -31,7 +31,7 @@ class ForwardOneToOneNode(DjangoNode):
             "name",
             "example_rel",
         ]
-        permission_classes = [AllowAuthenticated]
+        permission_classes = [AllowAny]
         filterset_class = ForwardOneToOneFilterSet
 
 
@@ -43,7 +43,7 @@ class ForwardManyToOneNode(DjangoNode):
             "name",
             "example_rels",
         ]
-        permission_classes = [AllowAuthenticated]
+        permission_classes = [AllowAny]
         filterset_class = ForwardManyToOneFilterSet
 
 
@@ -55,7 +55,7 @@ class ForwardManyToManyNode(DjangoNode):
             "name",
             "example_rels",
         ]
-        permission_classes = [AllowAuthenticated]
+        permission_classes = [AllowAny]
         filterset_class = ForwardManyToManyFilterSet
 
 
@@ -67,7 +67,7 @@ class ReverseOneToOneNode(DjangoNode):
             "name",
             "example_field",
         ]
-        permission_classes = [AllowAuthenticated]
+        permission_classes = [AllowAny]
         filterset_class = ReverseOneToOneFilterSet
 
 
@@ -79,7 +79,7 @@ class ReverseOneToManyNode(DjangoNode):
             "name",
             "example_field",
         ]
-        permission_classes = [AllowAuthenticated]
+        permission_classes = [AllowAny]
         filterset_class = ReverseOneToManyFilterSet
 
 
@@ -91,7 +91,7 @@ class ReverseManyToManyNode(DjangoNode):
             "name",
             "example_fields",
         ]
-        permission_classes = [AllowAuthenticated]
+        permission_classes = [AllowAny]
         filterset_class = ReverseManyToManyFilterSet
 
 
@@ -132,7 +132,7 @@ class ExampleNode(DjangoNode):
             "reverse_one_to_one_rel",
             "tagged_items",
         ]
-        permission_classes = [AllowAuthenticated]
+        permission_classes = [AllowAny]
         restricted_fields = {
             "email": lambda user: user.is_superuser,
         }
